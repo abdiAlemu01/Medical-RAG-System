@@ -1,22 +1,24 @@
-"use client"
+
+  "use client"
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Progress } from '@/components/ui/progress'
 import { Textarea } from '@/components/ui/textarea'
-import { Database, LucideLoader2, MoveUp, RefreshCcw } from 'lucide-react'
-import React, { useState } from 'react'
+import { Database, LucideLoader2, MoveUp, RefreshCcw, Upload } from 'lucide-react'
+import React, { useState, useRef } from 'react'
 
 type Props = {}
 
 const VectorDBPage = (props: Props) => {
     const [isUploading, setisUploading] = useState(false)
+    const [isUploadingFiles, setIsUploadingFiles] = useState(false)
     const [indexname, setIndexname] = useState("");
     const [namespace, setNamespace] = useState("");
     const [fileListAsText, setfileListAsText] = useState("");
+    const fileInputRef = useRef<HTMLInputElement>(null);
     
-
     const [filename, setFilename] = useState("");
     const [progress, setProgress] = useState(0);
 
@@ -29,14 +31,55 @@ const VectorDBPage = (props: Props) => {
         setfileListAsText(resultString);
     }
 
+    const onFileUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
+        const files = event.target.files;
+        if (!files || files.length === 0) return;
+
+        setIsUploadingFiles(true);
+        const formData = new FormData();
+        
+        for (let i = 0; i < files.length; i++) {
+            formData.append('files', files[i]);
+        }
+
+        try {
+            const response = await fetch('/api/upload', {
+                method: 'POST',
+                body: formData,
+            });
+
+            const result = await response.json();
+            
+            if (result.success) {
+                alert(`${result.message}`);
+                await onFileListRefresh();
+            } else {
+                alert('Upload failed');
+            }
+        } catch (error) {
+            console.error('Upload error:', error);
+            alert('Upload failed');
+        } finally {
+            setIsUploadingFiles(false);
+            if (fileInputRef.current) {
+                fileInputRef.current.value = '';
+            }
+        }
+    }
+
+    const handleUploadClick = () => {
+        fileInputRef.current?.click();
+    }
+
+    
     const onStartUpload = async () => {
         setProgress(0);
         setFilename("");
         setisUploading(true);
         const response = await fetch('api/updatedatabase', {
             method: 'POST', body: JSON.stringify({
-                indexname,
-                namespace
+                indexname, // place where to upload in vector DB
+                namespace //each of the files will be uploaded under indexname/namespace
             })
         })
         console.log(response);
@@ -76,7 +119,7 @@ const VectorDBPage = (props: Props) => {
             <Card>
                 <CardHeader>
                     <CardTitle>Update Knowledge Base</CardTitle>
-                    <CardDescription>Add new docuemnts to your vector DB</CardDescription>
+                    <CardDescription>Add new documents to your vector DB</CardDescription>
                 </CardHeader>
                 <CardContent>
                     <div className='grid grid-cols-3 gap-4'>
@@ -89,6 +132,25 @@ const VectorDBPage = (props: Props) => {
                                 <Textarea readOnly value={fileListAsText}
                                     className='min-h-24 resize-none border p-3 shadow-none disabled:cursor-default focus-visible:ring-0 text-sm text-muted-foreground'
                                 />
+                            </div>
+                            <div className='flex gap-2'>
+                                <input
+                                    ref={fileInputRef}
+                                    type="file"
+                                    multiple
+                                    accept=".pdf,.txt"
+                                    onChange={onFileUpload}
+                                    className='hidden'
+                                />
+                                <Button 
+                                    onClick={handleUploadClick} 
+                                    variant={'outline'} 
+                                    className='w-full'
+                                    disabled={isUploadingFiles || isUploading}
+                                >
+                                    <Upload className='mr-2 h-4 w-4' />
+                                    {isUploadingFiles ? 'Uploading...' : 'Upload Documents'}
+                                </Button>
                             </div>
                             <div className='grid grid-cols-2 gap-4'>
                                 <div className="grid gap-2">

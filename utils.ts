@@ -1,10 +1,14 @@
+
+
 import { Pinecone, PineconeRecord, RecordMetadata } from "@pinecone-database/pinecone";
 import { FeatureExtractionPipeline, pipeline } from "@xenova/transformers";
 import { Document } from "langchain/document";
 import { RecursiveCharacterTextSplitter } from "langchain/text_splitter";
 import { batchsize } from "./config";
 
-let callback: (filename: string, totalChunks: number, chunksUpserted: number, isComplete: boolean) => void;
+let callback: (filename: string, totalChunks: number, 
+               chunksUpserted: number, isComplete: boolean) => void;
+               
 let totalDocumentChunks: number;
 let totalDocumentChunksUpseted: number;
 
@@ -13,7 +17,8 @@ export async function updateVectorDB(
     indexname: string,
     namespace: string,
     docs: Document[],
-    progressCallback: (filename: string, totalChunks: number, chunksUpserted: number, isComplete: boolean) => void
+    progressCallback: (filename: string, totalChunks: number, chunksUpserted: number, 
+        isComplete: boolean) => void
 ) {
     callback = progressCallback;
     totalDocumentChunks = 0;
@@ -23,6 +28,7 @@ export async function updateVectorDB(
         quantized: false
     });
     console.log(extractor);
+
     for(const doc of docs){
         await processDocument(client, indexname, namespace, doc, extractor)
     }
@@ -31,14 +37,16 @@ export async function updateVectorDB(
     }
 }
 
-async function processDocument(client: Pinecone, indexname: string, namespace: string, doc: Document<Record<string, any>>, extractor: FeatureExtractionPipeline) {
+
+async function processDocument(client: Pinecone, indexname: string, namespace: string,
+    doc: Document<Record<string, any>>, extractor: FeatureExtractionPipeline) {
     const splitter = new RecursiveCharacterTextSplitter();
     const documentChunks = await splitter.splitText(doc.pageContent);
     totalDocumentChunks = documentChunks.length;
     totalDocumentChunksUpseted = 0;
     const filename = getFilename(doc.metadata.source);
     
-    console.log(documentChunks.length);
+    console.log(documentChunks.length); 
     let chunkBatchIndex = 0;
     while(documentChunks.length > 0){
         chunkBatchIndex++;
