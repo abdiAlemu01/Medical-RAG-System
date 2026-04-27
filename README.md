@@ -2,15 +2,22 @@
 
 AI-powered medical knowledge base with document upload, vector database indexing, and intelligent chat using RAG (Retrieval-Augmented Generation).
 
-##  Screenshots
+## 📸 Screenshots
 
 <div align="center">
 
-<img src=".github/screenshots/chat-interface.png" alt="Chat Interface" width="700"/>
-<img src=".github/screenshots/interface.png" alt="Interface" width="700"/>
-<img src=".github/screenshots/document-upload.png" alt="Document upload" width="700"/>
+### Chat Interface
+![Chat Interface](.github/screenshots/chat-interface.png)
+
+### Knowledge Base Manager  
+![Knowledge Base Manager](.github/screenshots/knowledge-base-manager.png)
+
+### Document Upload
+![Document Upload](.github/screenshots/document-upload.png)
 
 </div>
+
+> **Note:** Screenshots will appear once you add PNG files to `.github/screenshots/` folder and push to GitHub.
 
 
 ##  Key Features
@@ -110,3 +117,11 @@ rm -rf .next && npm run dev
 - Verify Pinecone API key and index name
 - Check index dimensions match embedding model
 
+
+## 📝 License
+
+MIT License
+
+---
+
+Built with ❤️ using Next.js and AI
