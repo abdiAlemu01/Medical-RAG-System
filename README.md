@@ -10,14 +10,12 @@ AI-powered medical knowledge base with document upload, vector database indexing
 ![Chat Interface](.github/screenshots/chat-interface.png)
 
 ### Knowledge Base Manager  
-![Knowledge Base Manager](.github/screenshots/knowledge-base-manager.png)
+![Knowledge Base Manager](.github/screenshots/interface.png)
 
 ### Document Upload
 ![Document Upload](.github/screenshots/document-upload.png)
 
 </div>
-
-> **Note:** Screenshots will appear once you add PNG files to `.github/screenshots/` folder and push to GitHub.
 
 
 ##  Key Features
