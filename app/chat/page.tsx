@@ -19,7 +19,6 @@ import { useState, useRef, useEffect, useCallback } from "react";
 import Link from "next/link";
 import {
   Send,
-  Settings,
   Sparkles,
   User,
   ChevronDown,
@@ -30,7 +29,6 @@ import {
   ArrowLeft,
   AlertCircle,
   Loader2,
-  X,
 } from "lucide-react";
 
 // ── Types ─────────────────────────────────────────────────────────────────────
@@ -49,21 +47,13 @@ interface Message {
 }
 
 // ── Example questions shown on the welcome screen ─────────────────────────────
-const EXAMPLE_QUESTIONS = [
-  "What are the diagnostic criteria for Type 2 Diabetes?",
-  "How is sepsis managed in an ICU setting?",
-  "What are the side effects of beta-blockers?",
-  "Explain the pathophysiology of congestive heart failure",
-];
+const EXAMPLE_QUESTIONS: string[] = [];
 
 
 export default function ChatPage() {
   const [messages, setMessages] = useState<Message[]>([]);
   const [question, setQuestion] = useState("");
   const [isLoading, setIsLoading] = useState(false);
-  const [showSettings, setShowSettings] = useState(false);
-  const [indexName, setIndexName] = useState("");
-  const [namespace, setNamespace] = useState("");
   const [expandedSources, setExpandedSources] = useState<Set<string>>(
     new Set()
   );
@@ -132,8 +122,6 @@ export default function ChatPage() {
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
             question: text,
-            indexName: indexName || undefined,
-            namespace: namespace || undefined,
             topK: 5,
           }),
         });
@@ -206,7 +194,7 @@ export default function ChatPage() {
         textareaRef.current?.focus();
       }
     },
-    [question, isLoading, indexName, namespace]
+    [question, isLoading]
   );
 
   const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
@@ -224,63 +212,18 @@ export default function ChatPage() {
         <div className="chat-header-inner">
           <div className="chat-header-left">
             <Link href="/" className="back-link" title="Back to home">
-              <ArrowLeft size={18} />
+              <ArrowLeft size={30} />
             </Link>
             <div className="logo-icon">
               <Sparkles size={18} color="white" />
             </div>
             <div>
               <h1 className="logo-title">MediScan AI</h1>
-              <p className="logo-subtitle">RAG-Powered Medical Assistant</p>
+              {/* <h1 className="logo-subtitle">RAG-Powered Medical Assistant</h1> */}
+              <p className="text-">RAG-Powered Medical Assistant</p>
             </div>
           </div>
-
-          <button
-            className={`settings-btn ${showSettings ? "settings-btn--active" : ""}`}
-            onClick={() => setShowSettings((s) => !s)}
-          >
-            {showSettings ? <X size={14} /> : <Settings size={14} />}
-            {showSettings ? "Close" : "Settings"}
-          </button>
         </div>
-
-        {/* Settings panel */}
-        {showSettings && (
-          <div className="settings-panel">
-            <div className="settings-grid">
-              {(
-                [
-                  {
-                    label: "Index Name",
-                    value: indexName,
-                    setter: setIndexName,
-                    placeholder: "e.g. medical-docs",
-                  },
-                  {
-                    label: "Namespace",
-                    value: namespace,
-                    setter: setNamespace,
-                    placeholder: "e.g. textbooks",
-                  },
-                ] as const
-              ).map(({ label, value, setter, placeholder }) => (
-                <div key={label}>
-                  <label className="settings-label">{label}</label>
-                  <input
-                    className="settings-input"
-                    value={value}
-                    onChange={(e) => setter(e.target.value)}
-                    placeholder={placeholder}
-                  />
-                </div>
-              ))}
-            </div>
-            <p className="settings-hint">
-              💡 Leave empty to use <code>PINECONE_INDEX_NAME</code> /{" "}
-              <code>PINECONE_NAMESPACE</code> from <code>.env</code>
-            </p>
-          </div>
-        )}
       </header>
 
       {/* ── Messages Scroll Area ── */}
@@ -340,7 +283,7 @@ export default function ChatPage() {
               value={question}
               onChange={(e) => setQuestion(e.target.value)}
               onKeyDown={handleKeyDown}
-              placeholder="Ask a medical question… (Enter to send, Shift+Enter for new line)"
+              placeholder="Ask a medical question…"
               rows={1}
             />
             <button
@@ -408,47 +351,6 @@ export default function ChatPage() {
         }
         .logo-title { margin: 0; font-size: 1rem; font-weight: 700; letter-spacing: -0.02em; }
         .logo-subtitle { margin: 0; font-size: 0.68rem; color: rgba(255,255,255,0.38); }
-
-        /* Settings button */
-        .settings-btn {
-          display: flex; align-items: center; gap: 6px;
-          padding: 7px 14px; border-radius: 8px;
-          border: 1px solid rgba(255,255,255,0.1);
-          background: rgba(255,255,255,0.05);
-          color: rgba(255,255,255,0.65); cursor: pointer;
-          font-size: 0.8rem; font-weight: 500;
-          transition: all 0.2s;
-        }
-        .settings-btn:hover { background: rgba(255,255,255,0.09); color: white; }
-        .settings-btn--active { background: rgba(6,182,212,0.15); color: #06b6d4; border-color: rgba(6,182,212,0.3); }
-
-        /* Settings panel */
-        .settings-panel {
-          max-width: 900px; margin: 0 auto;
-          padding: 1rem 1.5rem 1.25rem;
-          border-top: 1px solid rgba(255,255,255,0.05);
-          animation: fadeSlideIn 0.2s ease;
-        }
-        .settings-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 10px; }
-        .settings-label {
-          display: block; margin-bottom: 6px;
-          font-size: 0.7rem; font-weight: 600;
-          text-transform: uppercase; letter-spacing: 0.06em;
-          color: rgba(255,255,255,0.45);
-        }
-        .settings-input {
-          width: 100%; box-sizing: border-box;
-          background: rgba(255,255,255,0.05);
-          border: 1px solid rgba(255,255,255,0.1);
-          border-radius: 8px; padding: 9px 12px;
-          color: white; font-size: 0.85rem; outline: none;
-          transition: border-color 0.2s;
-          font-family: inherit;
-        }
-        .settings-input:focus { border-color: rgba(6,182,212,0.5); }
-        .settings-input::placeholder { color: rgba(255,255,255,0.28); }
-        .settings-hint { margin: 0; font-size: 0.71rem; color: rgba(255,255,255,0.32); line-height: 1.5; }
-        .settings-hint code { background: rgba(255,255,255,0.08); padding: 1px 5px; border-radius: 4px; font-size: 0.68rem; }
 
         /* ── Main scroll area ── */
         .chat-main { flex: 1; overflow-y: auto; padding: 2rem 1.5rem; }
@@ -668,7 +570,6 @@ export default function ChatPage() {
         /* ── Responsive ── */
         @media (max-width: 600px) {
           .examples-grid { grid-template-columns: 1fr; }
-          .settings-grid { grid-template-columns: 1fr; }
           .welcome-title { font-size: 1.5rem; }
         }
       `}</style>
