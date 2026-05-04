@@ -17,7 +17,9 @@ export default async function handler(
     return res.status(405).json({ error: "Method not allowed" });
   }
 
-  const uploadDir = path.join(process.cwd(), "uploads");
+  const uploadDir = process.env.NODE_ENV === 'production' 
+    ? '/opt/render/project/src/uploads'
+    : path.join(process.cwd(), "uploads");
   
   // Create uploads directory if it doesn't exist
   if (!fs.existsSync(uploadDir)) {

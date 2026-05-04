@@ -8,7 +8,7 @@ import { NextApiRequest, NextApiResponse } from "next";
 import path from "path";
 import fs from "fs";
 
-export default async (req: NextApiRequest, res: NextApiResponse) => {
+async function handler(req: NextApiRequest, res: NextApiResponse) {
     if (req.method === 'POST') {
         const { indexname, namespace } = JSON.parse(req.body)
         await handleUpload(indexname, namespace, res);
@@ -16,7 +16,9 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
 }
 
 async function handleUpload(indexname: string, namespace: string, res: NextApiResponse) {
-    const uploadDir = path.join(process.cwd(), 'uploads');
+    const uploadDir = process.env.NODE_ENV === 'production' 
+        ? '/opt/render/project/src/uploads'
+        : path.join(process.cwd(), 'uploads');
     
     // Create uploads directory if it doesn't exist
     if (!fs.existsSync(uploadDir)) {
@@ -50,3 +52,5 @@ async function handleUpload(indexname: string, namespace: string, res: NextApiRe
         }
     })
 }
+
+export default handler;

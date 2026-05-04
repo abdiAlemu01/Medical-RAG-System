@@ -17,7 +17,9 @@ export default async function handler(
       return res.status(400).json({ error: "Filename is required" });
     }
 
-    const uploadDir = path.join(process.cwd(), "uploads");
+    const uploadDir = process.env.NODE_ENV === 'production' 
+      ? '/opt/render/project/src/uploads'
+      : path.join(process.cwd(), "uploads");
     const filePath = path.join(uploadDir, filename);
 
     // Security check: ensure the file is within the uploads directory

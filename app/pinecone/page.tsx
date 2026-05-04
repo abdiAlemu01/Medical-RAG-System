@@ -27,10 +27,6 @@ const VectorDBPage = () => {
     const [filename, setFilename] = useState('')
     const [progress, setProgress] = useState(0)
 
-    useEffect(() => {
-        loadFileList()
-    }, [])
-
     const loadFileList = async () => {
         setIsLoadingFiles(true)
         try {
@@ -52,6 +48,10 @@ const VectorDBPage = () => {
         }
     }
 
+    useEffect(() => {
+        loadFileList()
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [])
     const deleteUploadedFile = async (filename: string) => {
         if (!confirm(`Are you sure you want to delete "${filename}"?`)) {
             return

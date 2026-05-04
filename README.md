@@ -123,3 +123,14 @@ MIT License
 ---
 
 Built with ❤️ using Next.js and AI
+
+
+
+
+
+
+
+
+
+
+You your task is customize the email by using the following data:                              first name: {{ $json['First name:'] }} last name:{{ $json['Last name:'] }} email address:{{ $json['email:']  }} phone number:{{ $json['Phone number:'] }}   --- email tempelate                           Hi {{ $json['First name:'] }}                     How are you? Thanks for submitted onboarding form.                                           I see here with your phone  {{ $json['Phone number:']  }} and email {{ $json['email:'] }}            Thanks                                              {{ $json['First name:'] }}  
